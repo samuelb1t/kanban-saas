@@ -1,4 +1,4 @@
-package com.kanban.saas.model;
+package com.kanban.saas.model.entities;
 
 import java.util.List;
 
@@ -13,21 +13,22 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
+@Entity
+@Table(name = "workspaces")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Entity
-@Table(name = "users")
-public class User {
+public class Workspace {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
   private String name;
-  private String email;
-  private String password;
 
-  @OneToMany
-  private List<UserWorkspace> workspaces;
+  @OneToMany(mappedBy = "workspace")
+  private List<Board> boards;
+
+
+  @OneToMany(mappedBy = "workspace")
+  private List<UserWorkspace> users;
 }

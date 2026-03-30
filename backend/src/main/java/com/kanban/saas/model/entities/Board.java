@@ -1,4 +1,4 @@
-package com.kanban.saas.model;
+package com.kanban.saas.model.entities;
 
 import java.util.List;
 
@@ -6,6 +6,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
@@ -27,8 +28,9 @@ public class Board {
   private String name;
 
   @ManyToOne
+  @JoinColumn(name = "workspace_id")
   private Workspace workspace;
 
-  @OneToMany
-  private List<Column> columns;
+  @OneToMany(mappedBy = "board")
+  private List<BoardColumn> columns;
 }

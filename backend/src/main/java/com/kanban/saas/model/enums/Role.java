@@ -1,4 +1,4 @@
-package com.kanban.saas.model;
+package com.kanban.saas.model.enums;
 
 public enum Role {
   OWNER,

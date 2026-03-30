@@ -1,31 +1,33 @@
-package com.kanban.saas.model;
+package com.kanban.saas.model.entities;
+
+import java.util.List;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@Entity
-@Table(name = "tasks")
-@AllArgsConstructor
-@NoArgsConstructor
+
 @Getter
 @Setter
-public class Task {
-
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table(name = "users")
+public class User {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
   private String name;
-  private String description;
-  private int order;
+  private String email;
+  private String password;
 
-  @ManyToOne
-  private Column column;
+  @OneToMany(mappedBy = "user")
+  private List<UserWorkspace> workspaces;
 }

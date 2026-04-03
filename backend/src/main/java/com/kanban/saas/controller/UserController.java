@@ -3,6 +3,7 @@ package com.kanban.saas.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,30 +16,34 @@ import com.kanban.saas.model.dtos.UserResponse;
 import com.kanban.saas.model.entities.User;
 import com.kanban.saas.service.UserService;
 
-@RestController("/auth")
-public class AuthController {
+@RestController("/user")
+public class UserController {
 
   @Autowired
   private UserService service;
 
-  @PostMapping("/auth")
+  @PostMapping
   public boolean save(@RequestBody User user){
     return service.save(user);
   }
 
-  @GetMapping("/get")
+  @GetMapping
   public ResponseEntity<List<UserResponse>> findAll(){
     return ResponseEntity.ok(service.getUsers());
   }
 
-  @GetMapping("/get/{id}")
+  @GetMapping("/{id}")
   public ResponseEntity<UserResponse> findById(@PathVariable Long id){
-    return ResponseEntity.ok(service.findById(id));
+    UserResponse user = service.findById(id);
+    if(user != null)
+      return ResponseEntity.ok(user);
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
   }
 
   @DeleteMapping("/delete/{id}")
   public ResponseEntity<Void> delete(@PathVariable Long id){
-    service.delete(id);
-    return ResponseEntity.noContent().build();
+    if (service.delete(id))
+      return ResponseEntity.noContent().build();
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
   }
 }

@@ -26,6 +26,7 @@ public class UserService {
   }
 
   public List<UserResponse> getUsers(){
+    System.out.println("aaaaaaaa");
     return repository.findAll().stream().map(u -> mapper.toDto(u)).toList();
   }
 

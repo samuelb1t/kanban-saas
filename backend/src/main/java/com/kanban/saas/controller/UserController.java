@@ -10,21 +10,26 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kanban.saas.model.dtos.UserRequest;
 import com.kanban.saas.model.dtos.UserResponse;
-import com.kanban.saas.model.entities.User;
 import com.kanban.saas.service.UserService;
 
-@RestController("/user")
+import jakarta.validation.Valid;
+
+@RestController
+@RequestMapping("/auth")
 public class UserController {
 
   @Autowired
   private UserService service;
 
   @PostMapping
-  public boolean save(@RequestBody User user){
-    return service.save(user);
+  public ResponseEntity<Void> save(@Valid @RequestBody UserRequest userDto){
+    service.save(userDto);
+    return ResponseEntity.status(HttpStatus.CREATED).body(null);
   }
 
   @GetMapping

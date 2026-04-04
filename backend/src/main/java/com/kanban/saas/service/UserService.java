@@ -4,9 +4,13 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.kanban.saas.mappers.UserMapper;
+import com.kanban.saas.model.dtos.UserRequest;
 import com.kanban.saas.model.dtos.UserResponse;
 import com.kanban.saas.model.entities.User;
 import com.kanban.saas.repository.UserRepository;
@@ -20,13 +24,17 @@ public class UserService {
   @Autowired
   private UserMapper mapper;
 
-  public boolean save(User user){
-    repository.save(user);
-    return true;
+  public void save(UserRequest userDto){
+    User user = mapper.toDomain(userDto);
+    try{
+      repository.save(user);
+    }
+    catch(DataIntegrityViolationException e){
+      throw new ResponseStatusException(HttpStatus.CONFLICT, "Email já cadastrado",null);
+    }
   }
 
   public List<UserResponse> getUsers(){
-    System.out.println("aaaaaaaa");
     return repository.findAll().stream().map(u -> mapper.toDto(u)).toList();
   }
 

@@ -1,13 +1,16 @@
 package com.kanban.saas.model.entities;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,10 +27,24 @@ public class User {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+
+  @NotBlank
   private String name;
+
+  @NotBlank
+  @Column(unique = true)
   private String email;
+
+  @NotBlank
   private String password;
 
   @OneToMany(mappedBy = "user")
   private List<UserWorkspace> workspaces;
+
+  public User(String name, String email, String password){
+    this.name = name;
+    this.email = email;
+    this.password = password;
+    this.workspaces = new ArrayList<>();
+  }
 }

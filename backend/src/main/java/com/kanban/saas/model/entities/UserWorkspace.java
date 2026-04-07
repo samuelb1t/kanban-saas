@@ -1,7 +1,9 @@
 package com.kanban.saas.model.entities;
 
-import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
@@ -20,8 +22,9 @@ import com.kanban.saas.model.enums.Role;
 @Setter
 public class UserWorkspace {
 
-  @EmbeddedId
-  private UserWorkspaceId id;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
   @ManyToOne
   @MapsId("userId")
@@ -34,4 +37,10 @@ public class UserWorkspace {
   private Workspace workspace;
 
   private Role role;
+
+  public UserWorkspace(User user, Workspace workspace, Role role){
+    this.user = user;
+    this.workspace = workspace;
+    this.role = role;
+  }
 }

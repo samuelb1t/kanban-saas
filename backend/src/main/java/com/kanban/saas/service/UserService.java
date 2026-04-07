@@ -46,6 +46,27 @@ public class UserService {
     return null;
   }
 
+  public boolean update(Long id, UserRequest userDto){
+    Optional<User> opUser = repository.findById(id);
+
+    if(opUser.isPresent()){
+      User user = opUser.get();
+      user.setName(userDto.getName());
+      user.setEmail(userDto.getEmail());
+      user.setPassword(userDto.getPassword());
+
+      try{
+        repository.save(user);
+        return true;
+      }
+      catch(DataIntegrityViolationException e){
+        throw new ResponseStatusException(HttpStatus.CONFLICT, "Email já cadastrado",null);
+      }
+    }
+
+    return false;
+  }
+
   public boolean delete(Long id){
     Optional<User> opUser = repository.findById(id);
 

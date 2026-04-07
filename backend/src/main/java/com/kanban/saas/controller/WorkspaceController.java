@@ -14,41 +14,41 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kanban.saas.model.dtos.UserRequest;
-import com.kanban.saas.model.dtos.UserResponse;
-import com.kanban.saas.service.UserService;
+import com.kanban.saas.model.dtos.WorkspaceRequest;
+import com.kanban.saas.model.dtos.WorkspaceResponse;
+import com.kanban.saas.service.WorkspaceService;
 
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/auth")
-public class UserController {
+@RequestMapping("/workspaces")
+public class WorkspaceController {
 
   @Autowired
-  private UserService service;
+  private WorkspaceService service;
 
-  @PostMapping
-  public ResponseEntity<Void> save(@Valid @RequestBody UserRequest userDto){
-    service.save(userDto);
+  @PostMapping("/{userId}")
+  public ResponseEntity<Void> save(@Valid @RequestBody WorkspaceRequest workspaceDto, @PathVariable Long userId){
+    service.save(workspaceDto, userId);
     return ResponseEntity.status(HttpStatus.CREATED).body(null);
   }
 
   @GetMapping
-  public ResponseEntity<List<UserResponse>> findAll(){
-    return ResponseEntity.ok(service.getUsers());
+  public ResponseEntity<List<WorkspaceResponse>> findAll(){
+    return ResponseEntity.ok(service.getWorkspaces());
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<UserResponse> findById(@PathVariable Long id){
-    UserResponse user = service.findById(id);
-    if(user != null)
-      return ResponseEntity.ok(user);
+  public ResponseEntity<WorkspaceResponse> findById(@PathVariable Long id){
+    WorkspaceResponse workspace = service.findById(id);
+    if(workspace != null)
+      return ResponseEntity.ok(workspace);
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<Void> update(@PathVariable Long id, @Valid @RequestBody UserRequest userDto){
-    if (service.update(id, userDto))
+  public ResponseEntity<Void> update(@PathVariable Long id, @Valid @RequestBody WorkspaceRequest workspaceDto){
+    if (service.update(id, workspaceDto))
       return ResponseEntity.ok().build();
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
   }

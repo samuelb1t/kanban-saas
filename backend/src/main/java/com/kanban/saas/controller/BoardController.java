@@ -14,44 +14,49 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.kanban.saas.model.dtos.UserRequest;
-import com.kanban.saas.model.dtos.UserResponse;
-import com.kanban.saas.service.UserService;
+import com.kanban.saas.model.dtos.BoardRequest;
+import com.kanban.saas.model.dtos.BoardResponse;
+import com.kanban.saas.service.BoardService;
 
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/auth")
-public class UserController {
+@RequestMapping("/boards")
+public class BoardController {
 
   @Autowired
-  private UserService service;
+  private BoardService service;
 
   @PostMapping
-  public ResponseEntity<Void> save(@Valid @RequestBody UserRequest userDto){
-    service.save(userDto);
+  public ResponseEntity<Void> save(@Valid @RequestBody BoardRequest boardDto){
+    service.save(boardDto);
     return ResponseEntity.status(HttpStatus.CREATED).body(null);
   }
 
   @GetMapping
-  public ResponseEntity<List<UserResponse>> findAll(){
-    return ResponseEntity.ok(service.getUsers());
+  public ResponseEntity<List<BoardResponse>> findAll(){
+    return ResponseEntity.ok(service.getBoards());
   }
 
   @GetMapping("/{id}")
-  public ResponseEntity<UserResponse> findById(@PathVariable Long id){
-    UserResponse user = service.findById(id);
-    if(user != null)
-      return ResponseEntity.ok(user);
+  public ResponseEntity<BoardResponse> findById(@PathVariable Long id){
+    BoardResponse board = service.findById(id);
+    if(board != null)
+      return ResponseEntity.ok(board);
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
   }
 
+  @GetMapping("/workspace/{workspaceId}")
+  public ResponseEntity<List<BoardResponse>> boardsByWorkspace(@PathVariable Long workspaceId){
+    return ResponseEntity.ok(service.getBoardsByWorkspace(workspaceId));
+  }
+
   @PutMapping("/{id}")
-  public ResponseEntity<Void> update(@PathVariable Long id, @Valid @RequestBody UserRequest userDto){
-    if (service.update(id, userDto))
+  public ResponseEntity<Void> update(@PathVariable Long id, @Valid @RequestBody BoardRequest boardDto){
+    if (service.update(id, boardDto))
       return ResponseEntity.ok().build();
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-  }
+  } 
 
   @DeleteMapping("/{id}")
   public ResponseEntity<Void> delete(@PathVariable Long id){

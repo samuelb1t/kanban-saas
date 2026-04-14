@@ -15,6 +15,9 @@ import com.kanban.saas.model.entities.Workspace;
 import com.kanban.saas.model.enums.Role;
 import com.kanban.saas.repository.UserRepository;
 import com.kanban.saas.repository.WorkspaceRepository;
+
+import jakarta.transaction.Transactional;
+
 import com.kanban.saas.repository.UserWorkspaceRepository;
 
 @Service
@@ -58,6 +61,7 @@ public class WorkspaceService {
     return null;
   }
 
+  @Transactional
   public boolean update(Long id, WorkspaceRequest workspaceDto) {
     Optional<Workspace> opWorkspace = repository.findById(id);
 
@@ -71,11 +75,15 @@ public class WorkspaceService {
     return false;
   }
 
+  @Transactional
   public boolean delete(Long id) {
     Optional<Workspace> opWorkspace = repository.findById(id);
 
     if (opWorkspace.isPresent()) {
       Workspace workspace = opWorkspace.get();
+
+      userWorkspaceRepository.deleteAllByWorkspace(workspace);
+
       repository.delete(workspace);
       return true;
     }

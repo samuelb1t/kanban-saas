@@ -28,12 +28,16 @@ public class BoardService {
   @Autowired
   private BoardMapper mapper;
 
-  public void save(BoardRequest boardDto) {
-    if (!workspaceRepository.existsById(boardDto.getWorkspaceId())) {
+  public void save(BoardRequest boardDto, Long workspaceId) {
+    if (!workspaceRepository.existsById(workspaceId)) {
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Workspace não encontrado", null);
     }
-
+    
     Board board = mapper.toDomain(boardDto);
+    
+    Workspace workspace = workspaceRepository.findById(workspaceId).get();
+    board.setWorkspace(workspace);
+
     repository.save(board);
   }
 
@@ -58,13 +62,9 @@ public class BoardService {
   public boolean update(Long id, BoardRequest boardDto) {
     Optional<Board> opBoard = repository.findById(id);
 
-    if (opBoard.isPresent() && workspaceRepository.existsById(boardDto.getWorkspaceId())) {
+    if (opBoard.isPresent()) {
       Board board = opBoard.get();
       board.setName(boardDto.getName());
-
-      Workspace workspace = new Workspace();
-      workspace.setId(boardDto.getWorkspaceId());
-      board.setWorkspace(workspace);
 
       repository.save(board);
       return true;

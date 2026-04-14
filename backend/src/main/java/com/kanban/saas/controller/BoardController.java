@@ -21,44 +21,44 @@ import com.kanban.saas.service.BoardService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/boards")
+@RequestMapping
 public class BoardController {
 
   @Autowired
   private BoardService service;
 
-  @PostMapping
-  public ResponseEntity<Void> save(@Valid @RequestBody BoardRequest boardDto){
-    service.save(boardDto);
+  @PostMapping("/workspaces/{workspaceId}/boards")
+  public ResponseEntity<Void> save(@Valid @RequestBody BoardRequest boardDto, @PathVariable Long workspaceId){
+    service.save(boardDto, workspaceId);
     return ResponseEntity.status(HttpStatus.CREATED).body(null);
   }
 
-  @GetMapping
+  @GetMapping("/boards")
   public ResponseEntity<List<BoardResponse>> findAll(){
     return ResponseEntity.ok(service.getBoards());
   }
 
-  @GetMapping("/{id}")
-  public ResponseEntity<BoardResponse> findById(@PathVariable Long id){
-    BoardResponse board = service.findById(id);
-    if(board != null)
-      return ResponseEntity.ok(board);
-    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-  }
+  // @GetMapping("/{id}")
+  // public ResponseEntity<BoardResponse> findById(@PathVariable Long id){
+  //   BoardResponse board = service.findById(id);
+  //   if(board != null)
+  //     return ResponseEntity.ok(board);
+  //   return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+  // }
 
-  @GetMapping("/workspace/{workspaceId}")
+  @GetMapping("/workspaces/{workspaceId}/boards")
   public ResponseEntity<List<BoardResponse>> boardsByWorkspace(@PathVariable Long workspaceId){
     return ResponseEntity.ok(service.getBoardsByWorkspace(workspaceId));
   }
 
-  @PutMapping("/{id}")
+  @PutMapping("/boards/{id}")
   public ResponseEntity<Void> update(@PathVariable Long id, @Valid @RequestBody BoardRequest boardDto){
     if (service.update(id, boardDto))
       return ResponseEntity.ok().build();
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
   } 
 
-  @DeleteMapping("/{id}")
+  @DeleteMapping("boards/{id}")
   public ResponseEntity<Void> delete(@PathVariable Long id){
     if (service.delete(id))
       return ResponseEntity.noContent().build();

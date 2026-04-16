@@ -11,7 +11,7 @@ import com.kanban.saas.model.entities.Task;
 @Repository
 public interface TaskRepository extends CrudRepository<Task, Long> {
   List<Task> findAll();
-  List<Task> findByColumn_Id(Long columnId);
+  List<Task> findByColumnId(Long columnId);
   Optional<Task> findById(Long id);
   void delete(Task task);
 }

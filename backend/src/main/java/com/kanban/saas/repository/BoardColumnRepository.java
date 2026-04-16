@@ -11,7 +11,7 @@ import com.kanban.saas.model.entities.BoardColumn;
 @Repository
 public interface BoardColumnRepository extends CrudRepository<BoardColumn, Long> {
   List<BoardColumn> findAll();
-  List<BoardColumn> findByBoard_Id(Long boardId);
+  List<BoardColumn> findByBoardId(Long boardId);
   Optional<BoardColumn> findById(Long id);
   void delete(BoardColumn column);
 }

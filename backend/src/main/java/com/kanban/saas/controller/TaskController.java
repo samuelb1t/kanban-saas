@@ -45,6 +45,13 @@ public class TaskController {
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
   }
 
+  @GetMapping("/column/{columnId}/tasks")
+  public ResponseEntity<List<TaskResponse>> findByColumnId(@PathVariable Long columnId){
+    List<TaskResponse> res = service.findByColumnId(columnId);
+    if(res != null) return ResponseEntity.ok(res);
+    return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+  }
+
   @PutMapping("/{id}")
   public ResponseEntity<Void> update(@PathVariable Long id, @Valid @RequestBody TaskRequest dto){
     if(service.update(id, dto)) return ResponseEntity.ok().build();

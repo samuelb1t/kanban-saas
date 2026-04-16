@@ -15,7 +15,4 @@ public class BoardColumnRequest {
 
   @NotNull(message = "Ordem é obrigatória")
   private Integer order;
-
-  @NotNull(message = "Board é obrigatório")
-  private Long boardId;
 }

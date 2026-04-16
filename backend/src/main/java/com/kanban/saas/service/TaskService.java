@@ -54,6 +54,15 @@ public class TaskService {
     return null;
   }
 
+  public List<TaskResponse> findByColumnId(Long columnId){
+    Optional<BoardColumn> opCol = columnRepository.findById(columnId);
+
+    if(opCol.isPresent()){
+      return repository.findByColumnId(columnId).stream().map(t -> mapper.toDto(t)).toList();
+    }
+    return null;
+  }
+
   public boolean update(Long id, TaskRequest req){
     Optional<Task> op = repository.findById(id);
     if(op.isPresent()){

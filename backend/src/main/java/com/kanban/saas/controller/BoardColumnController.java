@@ -21,37 +21,42 @@ import com.kanban.saas.service.BoardColumnService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/columns")
+@RequestMapping
 public class BoardColumnController {
 
   @Autowired
   private BoardColumnService service;
 
-  @PostMapping
-  public ResponseEntity<Void> save(@Valid @RequestBody BoardColumnRequest dto){
-    service.save(dto);
+  @PostMapping("/boards/{boardId}/columns")
+  public ResponseEntity<Void> save(@Valid @RequestBody BoardColumnRequest dto, @PathVariable Long boardId){
+    service.save(dto, boardId);
     return ResponseEntity.status(HttpStatus.CREATED).body(null);
   }
 
-  @GetMapping
+  @GetMapping("/columns")
   public ResponseEntity<List<BoardColumnResponse>> findAll(){
     return ResponseEntity.ok(service.getColumns());
   }
 
-  @GetMapping("/{id}")
+  @GetMapping("/columns/{id}")
   public ResponseEntity<BoardColumnResponse> findById(@PathVariable Long id){
     BoardColumnResponse res = service.findById(id);
     if(res != null) return ResponseEntity.ok(res);
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
   }
 
-  @PutMapping("/{id}")
+  @GetMapping("/boards/{boardId}/columns")
+  public ResponseEntity<List<BoardColumnResponse>> findByBoardId(@PathVariable Long boardId){
+    return ResponseEntity.ok(service.getColumnsByBoardId(boardId));
+  }
+
+  @PutMapping("columns/{id}")
   public ResponseEntity<Void> update(@PathVariable Long id, @Valid @RequestBody BoardColumnRequest dto){
     if(service.update(id, dto)) return ResponseEntity.ok().build();
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
   }
 
-  @DeleteMapping("/{id}")
+  @DeleteMapping("columns/{id}")
   public ResponseEntity<Void> delete(@PathVariable Long id){
     if(service.delete(id)) return ResponseEntity.noContent().build();
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);

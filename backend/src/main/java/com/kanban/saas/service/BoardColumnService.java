@@ -29,8 +29,8 @@ public class BoardColumnService {
   @Autowired
   private BoardColumnMapper mapper;
 
-  public void save(BoardColumnRequest req){
-    Optional<Board> opBoard = boardRepository.findById(req.getBoardId());
+  public void save(BoardColumnRequest req, Long boardId){
+    Optional<Board> opBoard = boardRepository.findById(boardId);
     if(opBoard.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Board não encontrado", null);
 
     BoardColumn column = mapper.toDomain(req);
@@ -48,6 +48,10 @@ public class BoardColumnService {
     return repository.findAll().stream().map(c -> mapper.toDto(c)).toList();
   }
 
+  public List<BoardColumnResponse> getColumnsByBoardId(Long boardId){
+    return repository.findByBoardId(boardId).stream().map(c -> mapper.toDto(c)).toList();
+  }
+
   public BoardColumnResponse findById(Long id){
     Optional<BoardColumn> op = repository.findById(id);
     if(op.isPresent()) return mapper.toDto(op.get());
@@ -60,11 +64,6 @@ public class BoardColumnService {
       BoardColumn column = op.get();
       column.setName(req.getName());
       if(req.getOrder() != null) column.setOrder(req.getOrder());
-
-      Optional<Board> opBoard = boardRepository.findById(req.getBoardId());
-      if(opBoard.isEmpty()) throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Board não encontrado", null);
-
-      column.setBoard(opBoard.get());
 
       try{
         repository.save(column);

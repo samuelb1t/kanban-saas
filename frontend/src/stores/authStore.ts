@@ -2,6 +2,7 @@ import { create } from "zustand";
 import type { User } from "@/types";
 
 interface AuthState {
+  token: any;
   user: User | null;
   isAuthenticated: boolean;
   login: (user: User) => void;

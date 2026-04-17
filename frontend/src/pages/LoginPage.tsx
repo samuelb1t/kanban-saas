@@ -6,7 +6,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { Kanban } from "lucide-react";
 
 const LoginPage = () => {
@@ -15,7 +21,11 @@ const LoginPage = () => {
   const [loading, setLoading] = useState(false);
 
   const [loginForm, setLoginForm] = useState({ email: "", password: "" });
-  const [registerForm, setRegisterForm] = useState({ name: "", email: "", password: "" });
+  const [registerForm, setRegisterForm] = useState({
+    name: "",
+    email: "",
+    password: "",
+  });
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -33,7 +43,15 @@ const LoginPage = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const { user } = await authService.register(registerForm);
+      // 1. Cria o usuário
+      await authService.register(registerForm);
+
+      // 2. Faz login em seguida
+      const { user, token } = await authService.login({
+        email: registerForm.email,
+        password: registerForm.password,
+      });
+
       login(user);
       navigate("/dashboard");
     } finally {
@@ -63,17 +81,41 @@ const LoginPage = () => {
             <CardContent>
               <TabsContent value="login" className="mt-0">
                 <CardTitle className="mb-1 text-lg">Welcome back</CardTitle>
-                <CardDescription className="mb-6">Sign in to your account</CardDescription>
+                <CardDescription className="mb-6">
+                  Sign in to your account
+                </CardDescription>
                 <form onSubmit={handleLogin} className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="login-email">Email</Label>
-                    <Input id="login-email" type="email" placeholder="you@example.com" value={loginForm.email} onChange={(e) => setLoginForm({ ...loginForm, email: e.target.value })} required />
+                    <Input
+                      id="login-email"
+                      type="email"
+                      placeholder="you@example.com"
+                      value={loginForm.email}
+                      onChange={(e) =>
+                        setLoginForm({ ...loginForm, email: e.target.value })
+                      }
+                      required
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="login-password">Password</Label>
-                    <Input id="login-password" type="password" placeholder="••••••••" value={loginForm.password} onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })} required />
+                    <Input
+                      id="login-password"
+                      type="password"
+                      placeholder="••••••••"
+                      value={loginForm.password}
+                      onChange={(e) =>
+                        setLoginForm({ ...loginForm, password: e.target.value })
+                      }
+                      required
+                    />
                   </div>
-                  <Button type="submit" className="w-full gradient-primary text-primary-foreground shadow-glow" disabled={loading}>
+                  <Button
+                    type="submit"
+                    className="w-full gradient-primary text-primary-foreground shadow-glow"
+                    disabled={loading}
+                  >
                     {loading ? "Signing in..." : "Enter workspace"}
                   </Button>
                 </form>
@@ -81,21 +123,62 @@ const LoginPage = () => {
 
               <TabsContent value="register" className="mt-0">
                 <CardTitle className="mb-1 text-lg">Create account</CardTitle>
-                <CardDescription className="mb-6">Get started with FlowBoard</CardDescription>
+                <CardDescription className="mb-6">
+                  Get started with FlowBoard
+                </CardDescription>
                 <form onSubmit={handleRegister} className="space-y-4">
                   <div className="space-y-2">
                     <Label htmlFor="reg-name">Name</Label>
-                    <Input id="reg-name" placeholder="Jane Cooper" value={registerForm.name} onChange={(e) => setRegisterForm({ ...registerForm, name: e.target.value })} required />
+                    <Input
+                      id="reg-name"
+                      placeholder="Jane Cooper"
+                      value={registerForm.name}
+                      onChange={(e) =>
+                        setRegisterForm({
+                          ...registerForm,
+                          name: e.target.value,
+                        })
+                      }
+                      required
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="reg-email">Email</Label>
-                    <Input id="reg-email" type="email" placeholder="you@example.com" value={registerForm.email} onChange={(e) => setRegisterForm({ ...registerForm, email: e.target.value })} required />
+                    <Input
+                      id="reg-email"
+                      type="email"
+                      placeholder="you@example.com"
+                      value={registerForm.email}
+                      onChange={(e) =>
+                        setRegisterForm({
+                          ...registerForm,
+                          email: e.target.value,
+                        })
+                      }
+                      required
+                    />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="reg-password">Password</Label>
-                    <Input id="reg-password" type="password" placeholder="••••••••" value={registerForm.password} onChange={(e) => setRegisterForm({ ...registerForm, password: e.target.value })} required />
+                    <Input
+                      id="reg-password"
+                      type="password"
+                      placeholder="••••••••"
+                      value={registerForm.password}
+                      onChange={(e) =>
+                        setRegisterForm({
+                          ...registerForm,
+                          password: e.target.value,
+                        })
+                      }
+                      required
+                    />
                   </div>
-                  <Button type="submit" className="w-full gradient-primary text-primary-foreground shadow-glow" disabled={loading}>
+                  <Button
+                    type="submit"
+                    className="w-full gradient-primary text-primary-foreground shadow-glow"
+                    disabled={loading}
+                  >
                     {loading ? "Creating account..." : "Enter workspace"}
                   </Button>
                 </form>

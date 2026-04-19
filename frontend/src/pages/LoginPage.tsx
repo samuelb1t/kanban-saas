@@ -13,7 +13,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Kanban } from "lucide-react";
+import { Eye, EyeOff, Kanban } from "lucide-react";
 
 const LoginPage = () => {
   const navigate = useNavigate();
@@ -25,7 +25,13 @@ const LoginPage = () => {
     name: "",
     email: "",
     password: "",
+    confirmPassword: "",
   });
+  const [registerError, setRegisterError] = useState("");
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
+  const [showRegisterPassword, setShowRegisterPassword] = useState(false);
+  const [showRegisterConfirmPassword, setShowRegisterConfirmPassword] =
+    useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -40,7 +46,15 @@ const LoginPage = () => {
   };
 
   const handleRegister = async (e: React.FormEvent) => {
+    console.log("Registering user:", registerForm);
     e.preventDefault();
+    setRegisterError("");
+
+    if (registerForm.password !== registerForm.confirmPassword) {
+      setRegisterError("As senhas nao coincidem.");
+      return;
+    }
+
     setLoading(true);
     try {
       // 1. Cria o usuário
@@ -60,7 +74,7 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background p-4">
+    <div className="flex min-h-screen items-start justify-center bg-background p-4 pt-16 md:pt-24">
       <div className="w-full max-w-md animate-fade-in">
         <div className="mb-8 flex items-center justify-center gap-3">
           <div className="gradient-primary flex h-10 w-10 items-center justify-center rounded-lg">
@@ -100,16 +114,36 @@ const LoginPage = () => {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="login-password">Password</Label>
-                    <Input
-                      id="login-password"
-                      type="password"
-                      placeholder="••••••••"
-                      value={loginForm.password}
-                      onChange={(e) =>
-                        setLoginForm({ ...loginForm, password: e.target.value })
-                      }
-                      required
-                    />
+                    <div className="relative">
+                      <Input
+                        id="login-password"
+                        type={showLoginPassword ? "text" : "password"}
+                        placeholder="••••••••"
+                        value={loginForm.password}
+                        onChange={(e) =>
+                          setLoginForm({
+                            ...loginForm,
+                            password: e.target.value,
+                          })
+                        }
+                        className="pr-10"
+                        required
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowLoginPassword((v) => !v)}
+                        className="absolute inset-y-0 right-0 flex w-10 items-center justify-center text-muted-foreground hover:text-foreground"
+                        aria-label={
+                          showLoginPassword ? "Hide password" : "Show password"
+                        }
+                      >
+                        {showLoginPassword ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
+                      </button>
+                    </div>
                   </div>
                   <Button
                     type="submit"
@@ -160,20 +194,84 @@ const LoginPage = () => {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="reg-password">Password</Label>
-                    <Input
-                      id="reg-password"
-                      type="password"
-                      placeholder="••••••••"
-                      value={registerForm.password}
-                      onChange={(e) =>
-                        setRegisterForm({
-                          ...registerForm,
-                          password: e.target.value,
-                        })
-                      }
-                      required
-                    />
+                    <div className="relative">
+                      <Input
+                        id="reg-password"
+                        type={showRegisterPassword ? "text" : "password"}
+                        placeholder="••••••••"
+                        value={registerForm.password}
+                        onChange={(e) =>
+                          setRegisterForm({
+                            ...registerForm,
+                            password: e.target.value,
+                          })
+                        }
+                        className="pr-10"
+                        required
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowRegisterPassword((v) => !v)}
+                        className="absolute inset-y-0 right-0 flex w-10 items-center justify-center text-muted-foreground hover:text-foreground"
+                        aria-label={
+                          showRegisterPassword
+                            ? "Hide password"
+                            : "Show password"
+                        }
+                      >
+                        {showRegisterPassword ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
+                      </button>
+                    </div>
                   </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="reg-confirm-password">
+                      Confirm password
+                    </Label>
+                    <div className="relative">
+                      <Input
+                        id="reg-confirm-password"
+                        type={showRegisterConfirmPassword ? "text" : "password"}
+                        placeholder="••••••••"
+                        value={registerForm.confirmPassword}
+                        onChange={(e) => {
+                          if (registerError) {
+                            setRegisterError("");
+                          }
+                          setRegisterForm({
+                            ...registerForm,
+                            confirmPassword: e.target.value,
+                          });
+                        }}
+                        className="pr-10"
+                        required
+                      />
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setShowRegisterConfirmPassword((v) => !v)
+                        }
+                        className="absolute inset-y-0 right-0 flex w-10 items-center justify-center text-muted-foreground hover:text-foreground"
+                        aria-label={
+                          showRegisterConfirmPassword
+                            ? "Hide confirm password"
+                            : "Show confirm password"
+                        }
+                      >
+                        {showRegisterConfirmPassword ? (
+                          <EyeOff className="h-4 w-4" />
+                        ) : (
+                          <Eye className="h-4 w-4" />
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                  {registerError ? (
+                    <p className="text-sm text-destructive">{registerError}</p>
+                  ) : null}
                   <Button
                     type="submit"
                     className="w-full gradient-primary text-primary-foreground shadow-glow"

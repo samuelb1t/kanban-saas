@@ -7,8 +7,8 @@ export const authService = {
   // Backend espera: { name, email, password }
   // Backend retorna: 201 sem body
   register: async (payload: RegisterPayload): Promise<void> => {
+    console.log("Registering user with payload:", payload);
     await api.post("/auth", payload);
-    // Sem retorno — backend só confirma que criou (201)
   },
 
   // Login — ainda não existe no backend, será implementado com Spring Security

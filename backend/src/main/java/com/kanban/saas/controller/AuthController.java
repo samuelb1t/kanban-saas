@@ -29,6 +29,8 @@ public class AuthController {
 
   @PostMapping
   public ResponseEntity<Void> save(@Valid @RequestBody UserRequest userDto){
+    System.out.println("=============================");
+    System.out.println("Saving user: " + userDto.getName());
     service.save(userDto);
     return ResponseEntity.status(HttpStatus.CREATED).body(null);
   }

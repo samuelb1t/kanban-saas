@@ -11,10 +11,10 @@ import com.kanban.saas.model.entities.User;
 public class UserMapper {
 
   public UserResponse toDto(User user){
-    return new UserResponse(user.getName(),user.getEmail(),user.getPassword());
+    return new UserResponse(user.getName(),user.getEmail());
   }
 
   public User toDomain(UserRequest user){
-    return new User(user.getName(),user.getEmail(),user.getPassword());
+    return new User(user.name(),user.email(),user.password());
   }
 }

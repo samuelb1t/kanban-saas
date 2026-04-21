@@ -14,9 +14,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.kanban.saas.model.dtos.LoginRequest;
+import com.kanban.saas.model.dtos.LoginResponse;
 import com.kanban.saas.model.dtos.UserRequest;
 import com.kanban.saas.model.dtos.UserResponse;
-import com.kanban.saas.service.UserService;
+import com.kanban.saas.service.AuthService;
 
 import jakarta.validation.Valid;
 
@@ -25,14 +27,19 @@ import jakarta.validation.Valid;
 public class AuthController {
 
   @Autowired
-  private UserService service;
+  private AuthService service;
 
-  @PostMapping
+  @PostMapping("/register")
   public ResponseEntity<Void> save(@Valid @RequestBody UserRequest userDto){
     System.out.println("=============================");
-    System.out.println("Saving user: " + userDto.getName());
+    System.out.println("Saving user: " + userDto.name());
     service.save(userDto);
     return ResponseEntity.status(HttpStatus.CREATED).body(null);
+  }
+
+  @PostMapping("/login")
+  public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request){
+    return ResponseEntity.ok(service.login(request));
   }
 
   @GetMapping

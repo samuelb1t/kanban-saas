@@ -49,7 +49,7 @@ public class AuthService {
     Optional<User> opUser = repository.findByEmail(request.email());
 
     if(opUser.isEmpty()){
-      throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Usuário não encontrado");
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND,"Senha inválida");
     }
 
     User user = opUser.get();

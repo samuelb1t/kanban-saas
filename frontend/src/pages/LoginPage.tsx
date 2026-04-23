@@ -37,8 +37,8 @@ const LoginPage = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const { user } = await authService.login(loginForm);
-      login(user);
+      const { user, token } = await authService.login(loginForm);
+      login(user, token);
       navigate("/dashboard");
     } finally {
       setLoading(false);
@@ -66,7 +66,7 @@ const LoginPage = () => {
         password: registerForm.password,
       });
 
-      login(user);
+      login(user, token);
       navigate("/dashboard");
     } finally {
       setLoading(false);

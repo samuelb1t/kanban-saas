@@ -9,8 +9,14 @@ import com.kanban.saas.model.entities.BoardColumn;
 @Component
 public class BoardColumnMapper {
 
+  private final TaskMapper taskMapper;
+
+  public BoardColumnMapper(TaskMapper taskMapper) {
+    this.taskMapper = taskMapper;
+  }
+
   public BoardColumnResponse toDto(BoardColumn column){
-    return new BoardColumnResponse(column.getId(), column.getName(), column.getOrder(), column.getBoard() != null ? column.getBoard().getId() : null);
+    return new BoardColumnResponse(column.getId(), column.getName(), column.getOrder(), column.getBoard().getId(), column.getTasks().stream().map(t -> taskMapper.toDto(t)).toList());
   }
 
   public BoardColumn toDomain(BoardColumnRequest req){

@@ -3,9 +3,9 @@ package com.kanban.saas.service;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.kanban.saas.helper.WorkspaceAuthHelper;
 import com.kanban.saas.mappers.WorkspaceMapper;
 import com.kanban.saas.model.dtos.WorkspaceRequest;
 import com.kanban.saas.model.dtos.WorkspaceResponse;
@@ -23,17 +23,19 @@ import com.kanban.saas.repository.UserWorkspaceRepository;
 @Service
 public class WorkspaceService {
 
-  @Autowired
   private WorkspaceRepository repository;
-
-  @Autowired
   private UserRepository userRepository;
-
-  @Autowired
   private UserWorkspaceRepository userWorkspaceRepository;
-
-  @Autowired
   private WorkspaceMapper mapper;
+  private WorkspaceAuthHelper workspaceAuthHelper;
+
+  public WorkspaceService(WorkspaceRepository repository, UserRepository userRepository, UserWorkspaceRepository userWorkspaceRepository, WorkspaceMapper mapper, WorkspaceAuthHelper workspaceAuthHelper){
+    this.repository = repository;
+    this.userRepository = userRepository;
+    this.userWorkspaceRepository = userWorkspaceRepository;
+    this.mapper = mapper;
+    this.workspaceAuthHelper = workspaceAuthHelper;
+  }
 
   public void save(WorkspaceRequest workspaceDto, Long userId) {
     Optional<User> optionalUser = userRepository.findById(userId);
@@ -51,7 +53,11 @@ public class WorkspaceService {
     return repository.findAll().stream().map(w -> mapper.toDto(w)).toList();
   }
 
-  public WorkspaceResponse findById(Long id) {
+  public WorkspaceResponse findById(Long id, String email) {
+    if (!workspaceAuthHelper.hasAccess(id, email)) {
+      throw new Error("Acesso negado ao workspace");
+    }
+
     Optional<Workspace> opWorkspace = repository.findById(id);
 
     if (opWorkspace.isPresent()) {
@@ -62,32 +68,35 @@ public class WorkspaceService {
   }
 
   @Transactional
-  public boolean update(Long id, WorkspaceRequest workspaceDto) {
+  public boolean update(Long id, WorkspaceRequest workspaceDto, String email) {
     Optional<Workspace> opWorkspace = repository.findById(id);
 
-    if (opWorkspace.isPresent()) {
-      Workspace workspace = opWorkspace.get();
-      workspace.setName(workspaceDto.getName());
-      repository.save(workspace);
-      return true;
+    if(opWorkspace.isEmpty()) return false;
+    
+    if(!workspaceAuthHelper.havePermission(id, email, Role.EDITOR)){
+      throw new Error("Você não tem permissão para editar o workspace");
     }
 
-    return false;
+    Workspace workspace = opWorkspace.get();
+    workspace.setName(workspaceDto.getName());
+    repository.save(workspace);
+    return true;
   }
 
   @Transactional
-  public boolean delete(Long id) {
+  public boolean delete(Long id, String email) {
     Optional<Workspace> opWorkspace = repository.findById(id);
 
-    if (opWorkspace.isPresent()) {
-      Workspace workspace = opWorkspace.get();
+    if(opWorkspace.isEmpty()) return false;
 
-      userWorkspaceRepository.deleteAllByWorkspace(workspace);
-
-      repository.delete(workspace);
-      return true;
+    if(!workspaceAuthHelper.havePermission(id, email, Role.OWNER)){
+      throw new Error("Você não tem permissão para deletar o workspace");
     }
 
-    return false;
+    Workspace workspace = opWorkspace.get();
+    userWorkspaceRepository.deleteAllByWorkspace(workspace);
+    repository.delete(workspace);
+    return true;
+    
   }
 }

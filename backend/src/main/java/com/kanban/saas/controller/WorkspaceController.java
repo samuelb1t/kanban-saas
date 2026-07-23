@@ -1,10 +1,10 @@
 package com.kanban.saas.controller;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,29 +33,31 @@ public class WorkspaceController {
     return ResponseEntity.status(HttpStatus.CREATED).body(null);
   }
 
-  @GetMapping
-  public ResponseEntity<List<WorkspaceResponse>> findAll(){
-    return ResponseEntity.ok(service.getWorkspaces());
-  }
+  // @GetMapping
+  // public ResponseEntity<List<WorkspaceResponse>> findAll(){
+  //   return ResponseEntity.ok(service.getWorkspaces());
+  // }
 
   @GetMapping("/{id}")
-  public ResponseEntity<WorkspaceResponse> findById(@PathVariable Long id){
-    WorkspaceResponse workspace = service.findById(id);
+  public ResponseEntity<WorkspaceResponse> findById(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails){
+    String email = userDetails.getUsername();
+    
+    WorkspaceResponse workspace = service.findById(id, email);
     if(workspace != null)
       return ResponseEntity.ok(workspace);
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
   }
 
   @PutMapping("/{id}")
-  public ResponseEntity<Void> update(@PathVariable Long id, @Valid @RequestBody WorkspaceRequest workspaceDto){
-    if (service.update(id, workspaceDto))
+  public ResponseEntity<Void> update(@PathVariable Long id, @Valid @RequestBody WorkspaceRequest workspaceDto, @AuthenticationPrincipal UserDetails userDetails){
+    if (service.update(id, workspaceDto, userDetails.getUsername()))
       return ResponseEntity.ok().build();
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
   }
 
   @DeleteMapping("/{id}")
-  public ResponseEntity<Void> delete(@PathVariable Long id){
-    if (service.delete(id))
+  public ResponseEntity<Void> delete(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails){
+    if (service.delete(id, userDetails.getUsername()))
       return ResponseEntity.noContent().build();
     return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
   }

@@ -1,5 +1,7 @@
 package com.kanban.saas.model.dtos;
 
+import java.util.List;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -12,4 +14,5 @@ public class BoardColumnResponse {
   private String name;
   private Integer order;
   private Long boardId;
+  private List<TaskResponse> tasks;
 }

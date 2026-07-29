@@ -30,7 +30,7 @@ Exemplo de fluxo principal:
 - Frontend: React + TypeScript
 - Backend: Java + Spring Boot
 - Banco de dados: PostgreSQL
-- Cache e apoio de sessao: Redis
+- Cache e apoio de sessao pos-MVP: Redis
 - Observabilidade: Spring Boot Actuator + Micrometer + Prometheus + Grafana
 - Ambiente local: Docker Compose
 - CI/CD: GitHub Actions
@@ -111,9 +111,11 @@ Exemplo:
 Samuel moveu "Criar endpoint de login" de Todo para In Progress.
 ```
 
-## Papel do Redis
+## Papel do Redis no Pos-MVP
 
-Redis deve entrar como parte real da arquitetura, nao apenas como uma ferramenta adicionada por aparencia.
+Redis deve entrar somente depois que o MVP estiver funcional e integrado de ponta a ponta.
+
+A aplicacao deve funcionar primeiro usando PostgreSQL como dependencia de dados principal, sem exigir Redis para autenticacao, workspaces, boards, colunas ou tarefas. Quando for adicionado, Redis deve entrar como parte real da arquitetura, nao apenas como uma ferramenta adicionada por aparencia.
 
 Usos recomendados:
 
@@ -303,7 +305,7 @@ Entregas:
 
 - Estrutura do backend Spring Boot.
 - Estrutura do frontend React + TypeScript.
-- Docker Compose com PostgreSQL, Redis, backend e frontend.
+- Docker Compose com PostgreSQL, backend e frontend.
 - Configuracao de ambientes locais.
 - Migrations do banco.
 - Padrao basico de erros da API.
@@ -353,13 +355,14 @@ Backend:
 - Criar endpoints de auth.
 - Configurar Spring Security.
 - Implementar geracao e validacao de JWT.
-- Implementar refresh token.
+- Implementar refresh token com persistencia inicial no PostgreSQL.
 - Criar testes de auth.
 
 Frontend:
 
 - Tela de login.
 - Tela de cadastro.
+- Integrar cadastro, login, usuario atual e logout com a API real.
 - Armazenamento seguro do estado autenticado.
 - Protecao de rotas privadas.
 
@@ -396,11 +399,13 @@ Frontend:
 - Tela/lista de workspaces.
 - Seletor de workspace ativo.
 - Fluxo de criacao de workspace.
+- Integrar listagem, selecao e criacao de workspace com a API real.
 
 Criterio de pronto:
 
 - Usuario consegue criar workspace.
 - Usuario consegue alternar entre workspaces.
+- Workspaces criados continuam disponiveis apos recarregar a pagina.
 - Usuario nao consegue acessar workspace do qual nao e membro.
 - Testes cobrem tentativas de acesso cross-tenant.
 
@@ -433,20 +438,24 @@ Frontend:
 - Modal ou painel para criar/editar tarefa.
 - Drag and drop.
 - Estados de loading e erro.
+- Integrar todas as operacoes do kanban com a API real.
 
 Criterio de pronto:
 
 - Usuario consegue criar um board completo.
 - Usuario consegue mover tarefas entre colunas.
 - Ordem das tarefas permanece correta apos recarregar.
+- Nenhuma operacao principal do kanban depende de mocks.
 - Backend valida permissoes antes de qualquer alteracao.
 
-## Fase 5: Convites, Permissoes e Colaboracao
+## Fase 5: Fechamento do MVP, Permissoes e Colaboracao
 
-Objetivo: tornar o SaaS colaborativo e demonstrar controle de acesso real.
+Objetivo: fechar um MVP funcional de ponta a ponta, tornar o SaaS colaborativo e demonstrar controle de acesso real.
 
 Entregas:
 
+- Integracao completa entre frontend e backend no fluxo principal.
+- Remocao de mocks do fluxo principal.
 - Convite de membros.
 - Aceite de convite.
 - Alteracao de roles.
@@ -463,24 +472,46 @@ Backend:
 
 Frontend:
 
+- Services consumindo a API real para autenticacao, workspaces, boards, colunas e tarefas.
 - Tela de membros.
 - Acao de convidar membro.
 - Indicacao visual de role.
 - UI respeitando permissoes do usuario.
+- Estados de loading, vazio e erro nos fluxos principais.
 
 Criterio de pronto:
 
+- Usuario consegue completar o fluxo de cadastro, login, criacao de workspace, board, colunas e tarefas pela interface.
+- Alteracoes feitas no frontend sao persistidas pelo backend e continuam corretas apos recarregar a pagina.
+- O fluxo principal nao depende de dados mockados.
 - Owner/Admin conseguem convidar membros.
 - Member nao consegue gerenciar membros.
 - Viewer nao consegue alterar boards ou tarefas.
 - Backend bloqueia acoes indevidas mesmo que o frontend tente chama-las.
+- O MVP esta funcional localmente antes da introducao do Redis.
+
+## Marco: MVP Funcional
+
+Ao concluir a fase 5, o projeto deve ser utilizavel como um produto minimo completo:
+
+- Frontend e backend integrados.
+- Autenticacao e rotas protegidas funcionando.
+- Workspaces isolados por tenant.
+- Boards, colunas e tarefas com persistencia real.
+- Movimentacao e ordenacao de tarefas persistidas.
+- Permissoes basicas aplicadas pelo backend.
+- Fluxo principal executavel localmente com Docker Compose.
+- Nenhuma dependencia de Redis para o funcionamento do produto.
+
+Redis, observabilidade avancada, CI/CD e polish de portfolio devem evoluir sobre esse MVP, sem bloquear sua entrega inicial.
 
 ## Fase 6: Redis, Cache e Performance
 
-Objetivo: adicionar Redis com uso pratico e mensuravel.
+Objetivo: adicionar Redis ao MVP ja funcional, com uso pratico e mensuravel.
 
 Entregas:
 
+- Redis no Docker Compose.
 - Cache da visualizacao de board.
 - Invalidacao de cache em alteracoes.
 - Rate limit de login/reset de senha.
@@ -497,6 +528,7 @@ Backend:
 
 Criterio de pronto:
 
+- O MVP continua funcional mesmo antes da ativacao das otimizacoes com Redis.
 - Board acessado repetidamente usa cache.
 - Alterar tarefa invalida cache corretamente.
 - Login sofre rate limit apos excesso de tentativas.
@@ -654,7 +686,10 @@ Esses itens podem ser adicionados depois, mas nao devem bloquear o core:
 2. Autenticacao
 3. Workspaces e multi-tenancy
 4. Kanban funcional
-5. Convites, permissoes e colaboracao
+5. Fechamento do MVP, permissoes e colaboracao
+
+Marco: MVP funcional integrado, persistente e sem mocks.
+
 6. Redis, cache e performance
 7. Prometheus, Grafana e observabilidade
 8. CI/CD e deploy
